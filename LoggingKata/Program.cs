@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.IO;
 using GeoCoordinatePortable;
+using System.Runtime.InteropServices;
 
 namespace LoggingKata
 {
@@ -30,24 +31,48 @@ namespace LoggingKata
             // Use the Select LINQ method to parse every line in lines collection
             var locations = lines.Select(parser.Parse).ToArray();
 
-  
+
             // Complete the Parse method in TacoParser class first and then START BELOW ----------
 
             // TODO: Create two `ITrackable` variables with initial values of `null`. 
             // These will be used to store your two Taco Bells that are the farthest from each other.
-            
+
+            ITrackable tacobellLocation1 = null;
+            ITrackable tacobellLocation2 = null;
+
             // TODO: Create a `double` variable to store the distance
 
             // TODO: Add the Geolocation library to enable location comparisons: using GeoCoordinatePortable;
             // Look up what methods you have access to within this library.
 
             // NESTED LOOPS SECTION----------------------------
-            
+
             // FIRST FOR LOOP -
             // TODO: Create a loop to go through each item in your collection of locations.
             // This loop will let you select one location at a time to act as the "starting point" or "origin" location.
             // Naming suggestion for variable: `locA`
-
+            double maxDistance = 0;
+            int numOfConditionMet = 0;
+            foreach (var locA in locations)
+            {
+                GeoCoordinate corA = new GeoCoordinate();
+                corA.Latitude = locA.Location.Latitude;
+                corA.Longitude = locA.Location.Longitude;
+                foreach (var locB in locations)
+                {
+                    GeoCoordinate corB = new GeoCoordinate();
+                    corB.Latitude = locB.Location.Latitude;
+                    corB.Longitude = locB.Location.Longitude;
+                    double curDistance = corA.GetDistanceTo(corB);
+                    if (curDistance > maxDistance)
+                    {
+                        Console.WriteLine($"update requirements have been met: {curDistance} {maxDistance}");
+                        maxDistance = curDistance;
+                        tacobellLocation1 = locA;
+                        tacobellLocation2 = locB;
+                    }
+                }
+            }
             // TODO: Once you have locA, create a new Coordinate object called `corA` with your locA's latitude and longitude.
 
             // SECOND FOR LOOP -
@@ -65,8 +90,9 @@ namespace LoggingKata
             // Once you've looped through everything, you've found the two Taco Bells farthest away from each other.
             // Display these two Taco Bell locations to the console.
 
-
-            
+            Console.WriteLine(maxDistance);
+            Console.WriteLine(tacobellLocation1.Name);
+            Console.WriteLine(tacobellLocation2.Name);
         }
     }
 }
